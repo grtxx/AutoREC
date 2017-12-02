@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="autorec_dsound.exe"/>
+    <OBJFILES value="autorec_dsound.obj grtdxutils.obj autorec_mainwindow.obj 
+      autorec_recorderframe.obj autorec_setupwindow.obj blade_enc.obj 
+      grtvumeter.obj ..\..\_common\gsockets.obj ..\ds1\circbuffer.obj 
+      autorec_alerter.obj ds1_encoderthread.obj ds1_recordingthread.obj 
+      ds1_mp3savethread.obj"/>
+    <RESFILES value="autorec_dsound.res"/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) autorec_mainwindow.dfm autorec_recorderframe.dfm 
+      autorec_setupwindow.dfm"/>
+    <LIBFILES value="C:\DXSDK\Lib\strmiids.lib lame_enc.lib C:\DXSDK\Lib\dsound.lib 
+      C:\DXSDK\Lib\dxguid.lib"/>
+    <LIBRARIES value="bcbsmp.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib vclx.lib bcbsmp.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi vclx.bpi dclocx.bpi"/>
+    <PATHCPP value=".;..\..\_common;..\ds1"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT;USEPACKAGES"/>
+    <MAINSOURCE value="autorec_dsound.cpp"/>
+    <INCLUDEPATH value="..\ds1;..\..\_common;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..\ds1;..\..\_common;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -c 
+      -tW -tWM"/>
+    <PFLAGS value="-$Y+ -$W -$O- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn -v"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj $(PACKAGES) sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="autorec_dsound.cpp" FORMNAME="" UNITNAME="autorec_dsound" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="grtdxutils.cpp" FORMNAME="" UNITNAME="grtdxutils.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_dsound.cpp" FORMNAME="" UNITNAME="autorec_dsound" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_mainwindow.cpp" FORMNAME="Form1" UNITNAME="autorec_mainwindow" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_recorderframe.cpp" FORMNAME="mp3record" UNITNAME="autorec_recorderframe" CONTAINERID="CCompiler" DESIGNCLASS="TFrame" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_setupwindow.cpp" FORMNAME="setupwindow" UNITNAME="autorec_setupwindow" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="blade_enc.cpp" FORMNAME="" UNITNAME="blade_enc.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="C:\DXSDK\Lib\strmiids.lib" FORMNAME="" UNITNAME="strmiids.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="lame_enc.lib" FORMNAME="" UNITNAME="lame_enc.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_dsound.res" FORMNAME="" UNITNAME="autorec_dsound.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="grtvumeter.cpp" FORMNAME="" UNITNAME="grtvumeter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\_common\gsockets.cpp" FORMNAME="" UNITNAME="gsockets" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\ds1\circbuffer.cpp" FORMNAME="" UNITNAME="circbuffer" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="C:\DXSDK\Lib\dsound.lib" FORMNAME="" UNITNAME="dsound.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="autorec_alerter.cpp" FORMNAME="" UNITNAME="autorec_alerter" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="C:\Program Files\Borland\CBuilder6\Include\Atl\atlbase.h" FORMNAME="" UNITNAME="atlbase.h" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="C:\DXSDK\Lib\dxguid.lib" FORMNAME="" UNITNAME="dxguid.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ds1_encoderthread.cpp" FORMNAME="" UNITNAME="ds1_encoderthread.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ds1_recordingthread.cpp" FORMNAME="" UNITNAME="ds1_recordingthread.cpp" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ds1_mp3savethread.cpp" FORMNAME="" UNITNAME="ds1_mp3savethread" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=1
+AutoIncBuild=1
+MajorVer=1
+MinorVer=0
+Release=0
+Build=4
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1038
+CodePage=1250
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.4
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+  </IDEOPTIONS>
+</PROJECT>

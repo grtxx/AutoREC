@@ -1,0 +1,46 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "autorec_mainwindow.h"
+
+
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "PERFGRAP"
+#pragma resource "*.dfm"
+
+#include "autorec_recorderframe.h"
+
+TForm1 *Form1;
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+        : TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+        int i;
+        int j = 0;
+        j=ParamStr(2).ToIntDef(0)+ParamStr(1).ToIntDef(0);
+        if (j==0) j=1;
+        Tmp3record *mp3rec;
+        for (i=1;i<=j;i++)
+        {
+                mp3rec=new Tmp3record(this);
+                mp3rec->Left=(i-1)*(mp3rec->Width)+31;
+                mp3rec->Top=0;
+                mp3rec->Name="mprec"+IntToStr(i);
+                mp3rec->LoadConfig(i);
+                InsertControl(mp3rec);
+                if (ParamStr(1)=="--auto") mp3rec->Start();
+        }
+        ClientWidth=(i-1)*mp3rec->Width+61;
+        ClientHeight=mp3rec->Height;
+}
+//---------------------------------------------------------------------------
+
+

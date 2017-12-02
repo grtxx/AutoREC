@@ -1,0 +1,38 @@
+LIBRARY     LAME_ENC.DLL 
+
+EXPORTS
+    _beCloseStream = beCloseStream 
+    _beDeinitStream = beDeinitStream 
+    _beEncodeChunk = beEncodeChunk 
+    _beInitStream = beInitStream 
+    _beVersion = beVersion 
+    _beWriteVBRHeader = beWriteVBRHeader 
+    beCloseStream                  @4   ; beCloseStream
+    beDeinitStream                 @3   ; beDeinitStream
+    beEncodeChunk                  @2   ; beEncodeChunk
+    beEncodeChunkFloatS16NI        @7   ; beEncodeChunkFloatS16NI
+    beFlushNoGap                   @8   ; beFlushNoGap
+    beInitStream                   @1   ; beInitStream
+    beVersion                      @5   ; beVersion
+    beWriteInfoTag                 @9   ; beWriteInfoTag
+    beWriteVBRHeader               @6   ; beWriteVBRHeader
+    lame_close                     @101 ; lame_close
+    lame_encode_buffer_interleaved @110 ; lame_encode_buffer_interleaved
+    lame_encode_flush              @120 ; lame_encode_flush
+    lame_get_in_samplerate         @1003; lame_get_in_samplerate
+    lame_get_num_channels          @1005; lame_get_num_channels
+    lame_get_num_samples           @1001; lame_get_num_samples
+    lame_get_out_samplerate        @1013; lame_get_out_samplerate
+    lame_get_scale                 @1007; lame_get_scale
+    lame_get_scale_left            @1009; lame_get_scale_left
+    lame_get_scale_right           @1011; lame_get_scale_right
+    lame_init                      @100 ; lame_init
+    lame_init_params               @102 ; lame_init_params
+    lame_mp3_tags_fid              @130 ; lame_mp3_tags_fid
+    lame_set_in_samplerate         @1002; lame_set_in_samplerate
+    lame_set_num_channels          @1004; lame_set_num_channels
+    lame_set_num_samples           @1000; lame_set_num_samples
+    lame_set_out_samplerate        @1012; lame_set_out_samplerate
+    lame_set_scale                 @1006; lame_set_scale
+    lame_set_scale_left            @1008; lame_set_scale_left
+    lame_set_scale_right           @1010; lame_set_scale_right

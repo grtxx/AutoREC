@@ -1,0 +1,289 @@
+object setupwindow: Tsetupwindow
+  Left = 214
+  Top = 271
+  BorderStyle = bsDialog
+  Caption = 'AutoREC be'#225'll'#237't'#225'sok'
+  ClientHeight = 225
+  ClientWidth = 352
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PageControl1: TPageControl
+    Left = 8
+    Top = 8
+    Width = 337
+    Height = 177
+    ActivePage = TabSheet2
+    MultiLine = True
+    ScrollOpposite = True
+    TabIndex = 1
+    TabOrder = 0
+    object TabSheet1: TTabSheet
+      Caption = 'Hang'
+      object Label2: TLabel
+        Left = 8
+        Top = 92
+        Width = 98
+        Height = 13
+        Caption = 'MP3 Datarate (kbps)'
+      end
+      object Label1: TLabel
+        Left = 8
+        Top = 60
+        Width = 85
+        Height = 13
+        Caption = 'Sample rate (KHz)'
+      end
+      object Label7: TLabel
+        Left = 8
+        Top = 28
+        Width = 63
+        Height = 13
+        Caption = 'Audioeszk'#246'z:'
+      end
+      object BitRate: TComboBox
+        Left = 112
+        Top = 88
+        Width = 65
+        Height = 21
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        Style = csDropDownList
+        ItemHeight = 13
+        ItemIndex = 7
+        TabOrder = 0
+        Text = '128'
+        Items.Strings = (
+          '24'
+          '32'
+          '48'
+          '64'
+          '80'
+          '96'
+          '112'
+          '128'
+          '160'
+          '192'
+          '224'
+          '256'
+          '320')
+      end
+      object SampleRate: TComboBox
+        Left = 112
+        Top = 56
+        Width = 65
+        Height = 21
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        Style = csDropDownList
+        ItemHeight = 13
+        ItemIndex = 1
+        TabOrder = 1
+        Text = '44100'
+        Items.Strings = (
+          '32000'
+          '44100'
+          '48000')
+      end
+      object DevCombo: TComboBox
+        Left = 112
+        Top = 24
+        Width = 209
+        Height = 21
+        BevelInner = bvNone
+        BevelOuter = bvNone
+        Style = csDropDownList
+        ItemHeight = 13
+        TabOrder = 2
+      end
+    end
+    object TabSheet2: TTabSheet
+      Caption = 'C'#233'lk'#246'nyvt'#225'r'
+      ImageIndex = 1
+      object Label5: TLabel
+        Left = 8
+        Top = 28
+        Width = 129
+        Height = 13
+        AutoSize = False
+        Caption = 'R'#246'gz'#237't'#233's c'#233'lk'#246'nyvt'#225'ra:'
+      end
+      object destdir: TEdit
+        Left = 8
+        Top = 48
+        Width = 313
+        Height = 21
+        TabOrder = 0
+        Text = 'destdir'
+      end
+      object destdir2: TEdit
+        Left = 8
+        Top = 72
+        Width = 313
+        Height = 21
+        TabOrder = 1
+        Text = 'destdir'
+      end
+    end
+    object TabSheet3: TTabSheet
+      Caption = 'Automatikus t'#246'rl'#233's'
+      ImageIndex = 2
+      object Label3: TLabel
+        Left = 8
+        Top = 28
+        Width = 89
+        Height = 13
+        AutoSize = False
+        Caption = 'Automatikus t'#246'rl'#233's '
+      end
+      object Label4: TLabel
+        Left = 160
+        Top = 28
+        Width = 89
+        Height = 13
+        AutoSize = False
+        Caption = 'nap ut'#225'n'
+      end
+      object Edit2: TEdit
+        Left = 104
+        Top = 24
+        Width = 33
+        Height = 21
+        TabOrder = 0
+        Text = '62'
+      end
+      object AutoDelete: TUpDown
+        Left = 137
+        Top = 24
+        Width = 16
+        Height = 21
+        Associate = Edit2
+        Min = 0
+        Max = 1000
+        Position = 62
+        TabOrder = 1
+        Wrap = False
+      end
+    end
+    object TabSheet4: TTabSheet
+      Caption = 'F'#225'jl-v'#225'lt'#225'sok'
+      ImageIndex = 3
+      object Label6: TLabel
+        Left = 272
+        Top = 52
+        Width = 17
+        Height = 13
+        AutoSize = False
+        Caption = ':'
+      end
+      object FileChanges: TListBox
+        Left = 0
+        Top = 8
+        Width = 209
+        Height = 137
+        ItemHeight = 13
+        Sorted = True
+        TabOrder = 0
+        OnKeyUp = FileChangesKeyUp
+      end
+      object Hour: TEdit
+        Left = 224
+        Top = 48
+        Width = 25
+        Height = 21
+        TabOrder = 1
+        Text = '0'
+      end
+      object UpDown1: TUpDown
+        Left = 249
+        Top = 48
+        Width = 16
+        Height = 21
+        Associate = Hour
+        Min = 0
+        Max = 23
+        Position = 0
+        TabOrder = 2
+        Wrap = False
+      end
+      object Minute: TEdit
+        Left = 280
+        Top = 48
+        Width = 25
+        Height = 21
+        TabOrder = 3
+        Text = '0'
+      end
+      object UpDown2: TUpDown
+        Left = 305
+        Top = 48
+        Width = 16
+        Height = 21
+        Associate = Minute
+        Min = 0
+        Max = 59
+        Position = 0
+        TabOrder = 4
+        Wrap = False
+      end
+      object Button4: TButton
+        Left = 224
+        Top = 80
+        Width = 97
+        Height = 25
+        Caption = '+'
+        TabOrder = 5
+        OnClick = Button4Click
+      end
+    end
+    object TabSheet5: TTabSheet
+      Caption = 'N'#233'vjegy'
+      ImageIndex = 4
+      object Memo1: TMemo
+        Left = 48
+        Top = 24
+        Width = 225
+        Height = 105
+        BorderStyle = bsNone
+        Color = clBtnFace
+        Lines.Strings = (
+          'Ezt a programot Gerebenics Andor '#237'rta.'
+          'A program szabadon terjeszthet'#337', publik'#225'lhat'#243' '
+          'de csak a szerz'#337' enged'#233'ly'#233'vel m'#243'dos'#237'that'#243'.'
+          ''
+          'A program a LAME mp3 enk'#243'dert haszn'#225'lja.'
+          ''
+          'email: grt2@freemail.hu')
+        ReadOnly = True
+        TabOrder = 0
+      end
+    end
+  end
+  object Button2: TButton
+    Left = 8
+    Top = 192
+    Width = 75
+    Height = 25
+    Caption = 'OK'
+    Default = True
+    TabOrder = 1
+    OnClick = Button2Click
+  end
+  object Button3: TButton
+    Left = 88
+    Top = 192
+    Width = 75
+    Height = 25
+    Cancel = True
+    Caption = 'M'#233'gse'
+    TabOrder = 2
+    OnClick = Button3Click
+  end
+end

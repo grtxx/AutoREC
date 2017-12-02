@@ -1,0 +1,76 @@
+//---------------------------------------------------------------------------
+
+#ifndef autorec_setupwindowH
+#define autorec_setupwindowH
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <ComCtrls.hpp>
+#include <ActnColorMaps.hpp>
+#include <ActnMan.hpp>
+#include <XPMan.hpp>
+#include "cdiroutl.h"
+#include <Grids.hpp>
+#include <Outline.hpp>
+//---------------------------------------------------------------------------
+class Tsetupwindow : public TForm
+{
+__published:	// IDE-managed Components
+        TPageControl *PageControl1;
+        TTabSheet *TabSheet1;
+        TTabSheet *TabSheet2;
+        TTabSheet *TabSheet3;
+        TLabel *Label2;
+        TComboBox *BitRate;
+        TComboBox *SampleRate;
+        TLabel *Label1;
+        TEdit *destdir;
+        TLabel *Label3;
+        TEdit *Edit2;
+        TLabel *Label4;
+        TUpDown *AutoDelete;
+        TLabel *Label5;
+        TButton *Button2;
+        TButton *Button3;
+        TTabSheet *TabSheet4;
+        TLabel *Label7;
+        TComboBox *DevCombo;
+        TListBox *FileChanges;
+        TEdit *Hour;
+        TUpDown *UpDown1;
+        TEdit *Minute;
+        TUpDown *UpDown2;
+        TLabel *Label6;
+        TButton *Button4;
+        TTabSheet *TabSheet5;
+        TMemo *Memo1;
+        TEdit *destdir2;
+	TTabSheet *TabSheet6;
+	TCheckBox *email_do;
+	TEdit *email_rcpt;
+	TLabel *Label8;
+	TEdit *email_from;
+	TLabel *Label9;
+	TEdit *email_smtp;
+	TLabel *Label10;
+	TCheckBox *http_do;
+	TEdit *http_url;
+	TLabel *Label11;
+        void __fastcall FormCreate(TObject *Sender);
+        void __fastcall Button3Click(TObject *Sender);
+        void __fastcall Button2Click(TObject *Sender);
+        void __fastcall Button4Click(TObject *Sender);
+        void __fastcall FileChangesKeyUp(TObject *Sender, WORD &Key,
+          TShiftState Shift);
+private:	// User declarations
+public:		// User declarations
+        int ConfigNumber;
+        __fastcall Tsetupwindow::LoadCurrentSettings();
+        __fastcall Tsetupwindow(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE Tsetupwindow *setupwindow;
+//---------------------------------------------------------------------------
+#endif

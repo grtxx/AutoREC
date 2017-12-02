@@ -1,0 +1,519 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#include <registry.hpp>
+#pragma hdrstop
+
+#include "autorec_recorderframe.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+
+#include "grtdxutils.h"
+#include "autorec_setupwindow.h"
+#include "autorec_alerter.h"
+
+
+Tmp3record *mp3record;
+
+//---------------------------------------------------------------------------
+void IMP3RecSGCB::Init()
+{
+        dwInputBufferLength=0;
+        hStream=0;
+        dwOutputBufferLength=0;
+        dwInputBufPos=0;
+        bStartNew=true;
+        bHaveToSwitch=false;
+}
+
+STDMETHODIMP IMP3RecSGCB::SampleCB( double SampleTime, IMediaSample * pSample )
+{
+  unsigned char p;
+  long bfsize;
+  short *buffer;
+
+  bfsize=pSample->GetActualDataLength();
+  if (bfsize>0)
+  {
+//    todo:PostMessage(
+
+    Grabber->GetCurrentBuffer(&bfsize, NULL);
+    buffer=new short[bfsize];
+    Grabber->GetCurrentBuffer(&bfsize, (long*)buffer);
+//-- COUNT CURRENT VOLUME ---------------------------------------------------
+    try
+    {
+        int lft = 0;
+        int rht = 0;
+        int i;
+        for (i=0;i<bfsize/2;i+=2)
+        {
+                if (abs(buffer[i])>lft)   lft=abs(buffer[i]);
+				if (abs(buffer[i+1])>rht) rht=abs(buffer[i+1]);
+        }
+        if (pVolume!=NULL)
+        {
+                pVolume->Left=lft;
+                pVolume->Right=rht;
+        }
+    }
+    catch (...)
+    {
+    }
+//---------------------------------------------------------------------------
+    if (hStream==0 && bStartNew)
+    {
+        beInitStream(&mp3config, &dwInputBufferLength, &dwOutputBufferLength, &hStream);
+        if (dwInputBufPos==0)
+		{
+                InputBuffer=new short[dwInputBufferLength];
+        }
+        Mp3Buffer=new char[dwOutputBufferLength];
+        AnsiString filename=FormatDateTime(filenameformat,Now());
+        AnsiString filename1;
+        AnsiString filename2;
+        filename1=Directory1+filename+".mp3";
+        filename2=Directory2+filename+".mp3";
+        fout1=fopen(filename1.c_str(),"wb");
+        if (Directory2!="") { fout2=fopen(filename2.c_str(),"wb"); } else { fout2=NULL; }
+        filename="";
+        filename1="";
+        filename2="";
+    }
+    if (hStream!=0)
+    {
+        long i=0;
+        while (i<bfsize/2)
+        {
+                InputBuffer[dwInputBufPos]=buffer[i];
+                i++;
+                dwInputBufPos++;
+                if (dwInputBufPos==dwInputBufferLength)
+                {
+                        DWORD dwOutBufLen=0;
+                        dwInputBufPos=0;
+                        if (beEncodeChunk(hStream, dwInputBufferLength,
+                            InputBuffer, (BYTE*)Mp3Buffer, &dwOutBufLen)==BE_ERR_SUCCESSFUL)
+                        {
+                                StatusText="";
+                        } else {
+                                StatusText="ERROR";
+                        }
+						if (fout1!=NULL)
+                        {
+                                if (fwrite(Mp3Buffer,1,dwOutBufLen,fout1)<dwOutBufLen)
+                                {
+                                        fclose(fout1);
+                                        fout1=NULL;
+                                }
+                        }
+                        if (fout2!=NULL)
+                        {
+                                if (fwrite(Mp3Buffer,1,dwOutBufLen,fout2)<dwOutBufLen)
+                                {
+                                        fclose(fout2);
+                                        fout2=NULL;
+                                }
+						}
+                }
+        }
+    }
+    if (bHaveToSwitch)
+    {
+        DWORD dwOutBufLen;
+        beDeinitStream(hStream,(BYTE*)Mp3Buffer,&dwOutBufLen);
+        beCloseStream(hStream);
+        if (fout1!=NULL)
+        {
+                if (fwrite(Mp3Buffer,1,dwOutBufLen,fout1)<dwOutBufLen)
+                {
+                        fclose(fout1);
+                        fout1=NULL;
+                }
+        }
+        if (fout2!=NULL)
+        {
+                if (fwrite(Mp3Buffer,1,dwOutBufLen,fout2)<dwOutBufLen)
+                {
+                        fclose(fout2);
+                        fout2=NULL;
+                }
+        }
+        if (fout1!=NULL) fclose(fout1);
+        if (fout2!=NULL) fclose(fout2);
+        if (dwInputBufPos==0 || bStartNew==false) delete InputBuffer;
+        delete Mp3Buffer;
+        bHaveToSwitch=false;
+        hStream=0;
+    }
+    delete buffer;
+//---------------------------------------------------------------------------
+  }
+  return 0;
+}
+
+//---------------------------------------------------------------------------
+__fastcall Tmp3record::Free()
+{
+        Stop();
+        Changes->Free();
+        VU->Free();
+        TFrame::Free();
+}
+
+__fastcall Tmp3record::Tmp3record(TComponent* Owner)
+        : TFrame(Owner)
+{
+        DoubleBuffered=false;
+		Changes=new TStringList;
+		VU=new VUMeter(this);
+		VU->Left=89;
+		VU->Width=32;
+		VU->Top=20;
+		VU->Height=136;
+		VU->showkind=0;
+		VU->logaritmic=30;
+		InsertControl(VU);
+}
+
+__fastcall Tmp3record::LoadConfig(int aconfignumber)
+{
+		TRegistry *R=new TRegistry;
+
+		ConfigNumber=aconfignumber;
+		InputDeviceName="";
+		R->RootKey=HKEY_LOCAL_MACHINE;
+		R->OpenKey("Software\\GRT\\AutoREC\\"+IntToStr(aconfignumber),true);
+        try
+        {
+                if (R->ValueExists("SampleRate"))
+                {
+						InputDeviceName=R->ReadString("CaptureDevice");
+						InputDeviceGuid=R->ReadString("CaptureDeviceGuid");
+						dwSampleRate=R->ReadInteger("SampleRate");
+                        wBitRate=R->ReadInteger("BitRate");
+                        mp3dir=R->ReadString("DestinationDirectory");
+                        mp3dir2=R->ReadString("DestinationDirectory2");                        
+                        deletedays=R->ReadInteger("AutoDelete");
+                        int count=R->ReadInteger("FileChangeCount");
+                        int i;
+                        Changes->Clear();
+                        for (i=0; i<count; i++)
+                        {
+                                Changes->Add(R->ReadString("FileChange"+IntToStr(i)));
+						}
+
+						if (R->ValueExists("email_do")) email_do=R->ReadBool("email_do");
+						email_rcpt=R->ReadString("email_rcpt");
+						email_from=R->ReadString("email_from");
+						email_smtp=R->ReadString("email_smtp");
+
+						if (R->ValueExists("http_do")) http_do=R->ReadBool("http_do");
+						http_url=R->ReadString("http_url");
+				}
+		}
+		__finally
+		{
+				R->Free();
+		}
+		pgl=32768;
+		pgr=32768;
+		Label1->Caption="REC: "+IntToStr(ConfigNumber);
+		return true;
+}
+
+__fastcall Tmp3record::Start()
+{
+  CoInitialize(NULL);
+  if (InputDeviceName!="" && Status==0)
+  {
+	// Create directsoundcapture
+	CapDS=NULL;
+	GUID scard;
+
+	if (InputDeviceGuid=="") {
+		scard=DSDEVID_DefaultCapture;
+	} else {
+		scard=Sysutils::StringToGUID(InputDeviceGuid);
+	}
+
+	if FAILED ( DirectSoundCaptureCreate(&scard, &CapDS, NULL) )
+	{
+	  MessageBoxA(Handle, "Cannot create Directsound interface", "ERROR", 16);
+	} else {
+
+		HANDLE endevent=CreateEvent(NULL,true,false,NULL);
+		// Init recordthread
+		RT=new tRecordThread(CapDS, dwSampleRate, 2, 16);
+		RT->Priority=tpTimeCritical;
+		RT->endEvent=endevent;
+
+		// Init encoderthread
+   //		EN=new tEncoderThread(RT->cBuffer);
+   //		EN->initEncoder(ENCODER_MP3, dwSampleRate, 2, wBitRate, "");
+   //		EN->Priority=tpHigher;
+
+		RT->Resume();
+   //		EN->Resume();
+		Status=2;
+	}
+
+
+	/*
+		Status=1;
+		IAMStreamConfig * pSConf;
+		IPin *pSourceOutPin;
+		AM_MEDIA_TYPE pmt;
+		AM_MEDIA_TYPE *ppmt;
+		WAVEFORMATEX *wavefmt;
+
+		CoCreateInstance(CLSID_FilterGraph, NULL, CLSCTX_INPROC, IID_IGraphBuilder, (void**)&FL);
+		FL->QueryInterface(IID_IMediaControl, (void**)&MC);
+		FL->QueryInterface(IID_IMediaSeeking, (void**)&MS);
+
+		MC->StopWhenReady();
+
+		Source=CreateBaseFilterByCatAndName(CLSID_AudioInputDeviceCategory,InputDeviceName);
+
+		// --- Setting up Capture format -------------------------------------------
+		pSourceOutPin=FindFreeOutputPin(Source);
+		pSourceOutPin->QueryInterface(IID_IAMStreamConfig, (void**)&pSConf);
+		pSConf->GetFormat(&ppmt);
+		wavefmt=(WAVEFORMATEX*)(ppmt->pbFormat);
+		wavefmt->wFormatTag=WAVE_FORMAT_PCM;
+		wavefmt->nChannels=2;
+		wavefmt->nSamplesPerSec=dwSampleRate;
+		wavefmt->wBitsPerSample=16;
+		wavefmt->nAvgBytesPerSec=wavefmt->nChannels*wavefmt->nSamplesPerSec*wavefmt->wBitsPerSample/8;
+		wavefmt->nBlockAlign=4;
+		DWORD i=pSConf->SetFormat(ppmt);
+		pSConf->Release();
+		pSourceOutPin->Release();
+
+		bfSampleGrabber=CreateBaseFilterByCLSID(CLSID_SampleGrabber);
+		bfSampleGrabber->QueryInterface(IID_ISampleGrabber,(void**)&sgGrabber);
+
+		pMp3CB=new IMP3RecSGCB();
+		pMp3CB->Grabber=sgGrabber;
+		sgGrabber->SetCallback(pMp3CB,0);
+		sgGrabber->SetOneShot(false);
+		sgGrabber->SetBufferSamples(true);
+
+		FL->AddFilter(Source,L"Source");
+		FL->AddFilter(bfSampleGrabber,L"SampleGrabber");
+
+		FL->Connect(FindFreeOutputPin(Source), FindFreeInputPin(bfSampleGrabber));
+
+		pMp3CB->Init();
+		pMp3CB->mp3config.format.mp3.dwSampleRate=dwSampleRate;
+		pMp3CB->mp3config.format.mp3.byMode=BE_MP3_MODE_STEREO;
+		pMp3CB->mp3config.format.mp3.wBitrate=wBitRate;
+		pMp3CB->mp3config.format.mp3.bCopyright=false;
+		pMp3CB->mp3config.format.mp3.bCRC=false;
+		pMp3CB->mp3config.format.mp3.bOriginal=false;
+		pMp3CB->mp3config.format.mp3.bPrivate=false;
+		pMp3CB->Directory1=mp3dir;
+		pMp3CB->Directory2=mp3dir2;
+		pMp3CB->pVolume=&CurrentVolume;
+
+		Sleep(500);
+		MC->Run();
+		Status=2;
+	*/
+  } else {
+  }
+  return true;
+}
+
+__fastcall Tmp3record::Stop()
+{
+		if (Status=2)
+		{
+			/*
+				if (pMp3CB!=NULL)
+				{
+						pMp3CB->bStartNew=false;
+						pMp3CB->bHaveToSwitch=true;
+						while (pMp3CB->hStream!=0)
+						{
+								Sleep(100);
+						}
+						MC->Stop();
+						pMp3CB->Release(); pMp3CB=NULL;
+						sgGrabber->Release();
+						bfSampleGrabber->Release();
+						Source->Release();
+						MC->Release();
+						FL->Release();
+						CurrentVolume.Left=0;
+						CurrentVolume.Right=0;
+				}
+				Status=0;
+			*/
+			Status=0;
+
+			HANDLE endevent=RT->endEvent;
+			RT->eof=true;
+			WaitForSingleObject(endevent,10000);  ResetEvent(endevent);
+			RT->Free();
+			RT=NULL;
+			CapDS->Release();
+			CapDS=NULL;
+		}
+		return true;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall Tmp3record::Button3Click(TObject *Sender)
+{
+		Tsetupwindow *sw;
+		sw=new Tsetupwindow(this);
+		sw->ConfigNumber=ConfigNumber;
+		sw->LoadCurrentSettings();
+		sw->ShowModal();
+		sw->Release();
+		delete sw;
+		LoadConfig(ConfigNumber);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Tmp3record::SendAlert(AnsiString txt, int code)
+{
+	TAlerterThread *ta=new TAlerterThread();
+	ta->ConfigNumber=ConfigNumber;
+	if (email_do) {
+		ta->email_from=email_from;
+		ta->email_rcpt=email_rcpt;
+		ta->email_smtp=email_smtp;
+		ta->email_text=txt;
+	} else {
+        ta->email_smtp="";
+    }
+	if (http_do)
+	{
+		ta->http_url=http_url;
+		ta->http_func_code=code;
+	} else {
+		ta->http_url="";
+    }
+	ta->Resume();
+}
+
+void __fastcall Tmp3record::Timer1Timer(TObject *Sender)
+{
+  if (Status==2) {
+	pgl=((pgl<RT->leftvol) ? RT->leftvol : pgl-1500);
+	pgr=((pgr<RT->rightvol) ? RT->rightvol : pgr-1500);
+	VU->SetLEDs(pgl, pgr);
+  } else {
+	VU->SetLEDs(0, 0);
+  }
+
+  if (CurrentVolume.Left<2000 && CurrentVolume.Right<2000  && Status==2)
+  {
+	if ( ((double)(Now())*86400-(double)LastSignal*86400 )>3)
+    {
+	  if (SignalIndicator->Caption=="" && Status==2) {
+		SendAlert("Az AutoREC csendet rögzít a következõ modulján: "+IntToStr(ConfigNumber),1);
+	  }
+	  SignalIndicator->Caption="NINCS JEL";
+	}
+  } else {
+	LastSignal=Now();
+	if ((CurrentVolume.Left>32760 || CurrentVolume.Right>32760) && Status==2)
+	{
+		SignalIndicator->Caption="CSÚCS";
+	} else {
+		if (SignalIndicator->Caption=="NINCS JEL" && Status==2) {
+			SendAlert("Az AutoREC hangot rögzít a következõ modulján: "+IntToStr(ConfigNumber),2);
+		}
+        SignalIndicator->Caption="";
+    }
+  }
+
+  if (pMp3CB!=NULL && Status==2)
+  {
+    if (pMp3CB->fout1==NULL)
+    {
+      Stop();
+      Status=3;
+    }
+  }
+
+  if (Status==2) StatusIndicator->Caption="Rögzít";
+  if (Status==0) StatusIndicator->Caption="Várakozik";
+  if (Status==3) StatusIndicator->Caption="HIBA!";
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Tmp3record::Button1Click(TObject *Sender)
+{
+  Start();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Tmp3record::Button2Click(TObject *Sender)
+{
+  Stop();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Tmp3record::Button4Click(TObject *Sender)
+{
+  if (Status==2) pMp3CB->bHaveToSwitch=true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Tmp3record::Dirdelete(AnsiString dir, AnsiString limit)
+{
+	 TSearchRec drec;
+     if (dir!="")
+     {
+        FindFirst(dir+"*.mp3", faAnyFile & !faDirectory, drec);
+        while (drec.Name!="")
+        {
+                if (drec.Name<limit)
+                {
+						DeleteFile(dir+drec.Name);
+                }
+                drec.Name="";
+                FindNext(drec);
+        }
+        FindClose(drec);
+     }
+}
+
+void __fastcall Tmp3record::Timer2Timer(TObject *Sender)
+{
+  int tme=(int)((double)Time()*1440);
+  if (LastTme!=tme)
+  {
+		int i;
+        int ctm;
+        for (i=0; i<Changes->Count; i++)
+		{
+          ctm=Changes->Strings[i].SubString(1,2).ToInt()*60+Changes->Strings[i].SubString(4,2).ToInt();
+          if (tme==ctm && Status==2)
+          {
+                if (pMp3CB!=NULL)
+                {
+                        pMp3CB->bHaveToSwitch=true;
+                }
+          }
+        }
+        LastTme=tme;
+  }
+  if ((tme % 1)==0 && deletedays>0 && Status==2)
+  {
+     AnsiString limit=FormatDateTime(filenameformat,(double)Now()-deletedays)+".mp3";
+     Dirdelete(mp3dir, limit);
+     Dirdelete(mp3dir2, limit);
+  }
+}
+//---------------------------------------------------------------------------
+
+
+
+

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009.01.12 23:46:38.703.cpp,c:\_Programok\!c\probak\autorec\Unit1.cpp=C:\_Programok\!c\probak\autorec\autorec_alerter.cpp</Transaction>
+    <Transaction>2009.01.12 23:46:38.703.h,c:\_Programok\!c\probak\autorec\Unit1.h=C:\_Programok\!c\probak\autorec\autorec_alerter.h</Transaction>
+    <Transaction>2009.01.13 00:09:42.390.cpp,c:\program files\borland\bds\4.0\Imports\MSXML_OCX.cpp=</Transaction>
+    <Transaction>2009.01.13 00:19:38.187.cpp,C:\Program Files\Borland\BDS\4.0\include\atl\atlconv.cpp=</Transaction>
+    <Transaction>2009.01.13 00:19:42.296.CPP,C:\Program Files\Borland\BDS\4.0\include\atl\ATLIMPL.CPP=</Transaction>
+  </Transactions>
+</BorlandProject>

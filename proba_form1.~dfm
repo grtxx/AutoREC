@@ -1,0 +1,76 @@
+object Form1: TForm1
+  Left = 211
+  Top = 663
+  Width = 792
+  Height = 234
+  Caption = 'Form1'
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  OnClose = FormClose
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Button1: TButton
+    Left = 8
+    Top = 8
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object ListBox1: TListBox
+    Left = 88
+    Top = 8
+    Width = 249
+    Height = 161
+    ItemHeight = 13
+    Sorted = True
+    TabOrder = 1
+  end
+  object Button2: TButton
+    Left = 8
+    Top = 40
+    Width = 75
+    Height = 25
+    Caption = 'Button2'
+    TabOrder = 2
+    OnClick = Button2Click
+  end
+  object ProgressBar1: TProgressBar
+    Left = 8
+    Top = 176
+    Width = 769
+    Height = 17
+    Min = 0
+    Max = 100
+    Smooth = True
+    TabOrder = 3
+  end
+  object StaticText1: TStaticText
+    Left = 8
+    Top = 72
+    Width = 16
+    Height = 17
+    AutoSize = False
+    BevelKind = bkFlat
+    Color = clBlack
+    ParentColor = False
+    TabOrder = 4
+  end
+  object Timer1: TTimer
+    Interval = 10
+    OnTimer = Timer1Timer
+    Left = 344
+    Top = 8
+  end
+  object OpenDialog1: TOpenDialog
+    Left = 344
+    Top = 40
+  end
+end

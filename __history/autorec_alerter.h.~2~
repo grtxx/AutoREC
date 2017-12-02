@@ -1,0 +1,29 @@
+//---------------------------------------------------------------------------
+
+#ifndef autorec_alerterH
+#define autorec_alerterH
+//---------------------------------------------------------------------------
+
+#include "gsockets.h"
+#include "winsock2.h"
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+
+
+class TAlerterThread : public TThread
+{
+public:
+	AnsiString email_from;
+	AnsiString email_to;
+	AnsiString email_smtp;
+	AnsiString email_text;
+	AnsiString http_url;
+	int http_func_code;
+
+	__fastcall TAlerterThread();
+	__fastcall Execute();
+};
+
+#endif

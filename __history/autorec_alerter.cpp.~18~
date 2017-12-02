@@ -1,0 +1,92 @@
+//---------------------------------------------------------------------------
+
+
+#pragma hdrstop
+
+#include "autorec_alerter.h";
+#include <sysutils.hpp>
+#include <activex.hpp>
+#include <msxml.h>
+#include "atlbase.h"
+
+
+
+//---------------------------------------------------------------------------
+
+#pragma package(smart_init)
+
+__fastcall TAlerterThread::TAlerterThread(): TThread(true)
+{
+	email_smtp="";
+	http_url="";
+	FreeOnTerminate=true;
+}
+
+void __fastcall TAlerterThread::Execute()
+{
+  WSAData WSAD;
+  WSAStartup(2,&WSAD);
+
+  if (email_smtp!="") {
+		sockaddr sa;
+		int sck;
+		sck=socket(AF_INET,SOCK_STREAM,0);
+		fillsadata(&sa, getHostIP(email_smtp).c_str(), 25);
+		if (! FAILED ( connect(sck, &sa, sizeof(sa)) ) )
+		{
+			{
+				//unsigned long i = 1;
+				//ioctlsocket(sck, FIONBIO, &i);
+			}
+
+			socketReadLn(sck);
+			sendStringw32Ln(sck, "HELO autorec");
+			socketReadLn(sck);
+			sendStringw32Ln(sck, "MAIL FROM: "+email_from);
+			socketReadLn(sck);
+			sendStringw32Ln(sck, "RCPT TO: "+email_rcpt);
+			socketReadLn(sck);
+			sendStringw32Ln(sck, "DATA"+email_rcpt);
+			sendStringw32Ln(sck, "Subject: Autorec figyelmeztetés");
+			sendStringw32Ln(sck, "To: "+email_rcpt);
+			sendStringw32Ln(sck, "From: Autorec <"+email_from+">");
+			sendStringw32Ln(sck, "");
+			sendStringw32Ln(sck, email_text);
+			sendStringw32Ln(sck, ".");
+			socketReadLn(sck);
+			sendStringw32Ln(sck, "quit");
+			shutdown(sck,0);
+		}
+  }
+
+  if (http_url!="") {
+	CoInitialize(NULL);
+	IXMLHttpRequest *xmlhttp;
+
+	CoCreateInstance(CLSID_XMLHTTPRequest,
+					   NULL,
+					   CLSCTX_INPROC_SERVER,
+					   IID_IXMLHttpRequest,
+					   (void**)&xmlhttp);
+
+	VARIANT vAsync;
+	VARIANT vUser;
+	VARIANT vPass;
+
+	VariantInit(&vUser);
+	VariantInit(&vPass);
+
+	VariantInit(&vAsync);
+	vAsync.iVal=false;
+	vAsync.vt=VT_I2;
+
+	xmlhttp->open(L"POST",StringToOleStr(http_url+"?cfn="+IntToStr(ConfigNumber)+"&func="+IntToStr(http_func_code)), vAsync,
+					 vUser, vPass);
+	xmlhttp->send(vUser);
+
+	VariantClear(&vPass);
+	VariantClear(&vUser);
+
+	xmlhttp->Release();
+  }
+}
